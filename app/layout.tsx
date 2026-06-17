@@ -6,6 +6,27 @@ export const metadata: Metadata = {
   title: "知の冒険",
   description: "毎日少しずつ学ぶ、自分専用の知識育成アプリ",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      {
+        url: "/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 // viewport は、スマホ表示やブラウザのテーマ色に関する設定です。
