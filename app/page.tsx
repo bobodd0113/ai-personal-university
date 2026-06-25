@@ -156,7 +156,7 @@ export default function HomePage() {
             lineHeight: "1.2",
           }}
         >
-          AIパーソナル大学
+          知の冒険
         </h1>
 
         <section

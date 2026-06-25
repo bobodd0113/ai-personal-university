@@ -58,6 +58,7 @@ export default function LearnPage() {
   const [completionMessages, setCompletionMessages] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [chatError, setChatError] = useState("");
+  const [failedMessage, setFailedMessage] = useState("");
   const [learningSummary, setLearningSummary] = useState("");
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   const nextTodaysLesson = getTodaysLesson(completedLessonIds);
@@ -187,12 +188,12 @@ export default function LearnPage() {
 
   // 送信ボタンを押したときの処理です。
   // 今はGemini APIを使わず、先生設定をもとにしたダミー返答を追加します。
-  async function sendMessage() {
+  async function sendMessage(messageText = inputText) {
     if (!todaysLesson || isSending) {
       return;
     }
 
-    const trimmedText = inputText.trim();
+    const trimmedText = messageText.trim();
 
     if (!trimmedText) {
       return;
@@ -200,6 +201,7 @@ export default function LearnPage() {
 
     setIsSending(true);
     setChatError("");
+    setFailedMessage("");
 
     const userMessage: ChatMessage = {
       id: Date.now(),
@@ -208,7 +210,7 @@ export default function LearnPage() {
       timestamp: new Date().toISOString(),
     };
 
-    let teacherMessage: ChatMessage;
+    let teacherMessage: ChatMessage | null;
 
     try {
       teacherMessage = {
@@ -216,27 +218,24 @@ export default function LearnPage() {
         role: "teacher",
         message: await requestGeminiReply({
           teacher,
-          lessonTitle: todaysLesson.title,
-          userMessage: trimmedText,
-          messages,
-        }),
+        lessonTitle: todaysLesson.title,
+        userMessage: trimmedText,
+        messages: messages.slice(-8),
+      }),
         timestamp: new Date().toISOString(),
       };
     } catch {
       setChatError(
         "Geminiとの接続に失敗しました。少し時間をおいて、もう一度送信してください。",
       );
-      teacherMessage = {
-        id: Date.now() + 1,
-        role: "system",
-        message:
-          "Geminiとの接続に失敗しました。少し時間をおいて、もう一度送信してください。",
-        timestamp: new Date().toISOString(),
-      };
+      setFailedMessage(trimmedText);
+      teacherMessage = null;
     }
 
     setMessages((currentMessages) => {
-      const nextMessages = [...currentMessages, userMessage, teacherMessage];
+      const nextMessages = teacherMessage
+        ? [...currentMessages, userMessage, teacherMessage]
+        : [...currentMessages, userMessage];
       if (todaysLesson) {
         saveMessagesForLesson(todaysLesson.id, nextMessages);
       }
@@ -281,6 +280,47 @@ export default function LearnPage() {
       JSON.stringify(historyByLesson),
     );
     setMessages([]);
+  }
+
+  // Gemini接続に失敗したとき、同じ文章をもう一度送ります。
+  // 失敗メッセージ自体はチャット履歴には保存しません。
+  async function resendFailedMessage() {
+    if (!failedMessage || isSending) {
+      return;
+    }
+
+    setIsSending(true);
+    setChatError("");
+
+    try {
+      const reply = await requestGeminiReply({
+        teacher,
+        lessonTitle: todaysLesson?.title ?? "",
+        userMessage: failedMessage,
+        messages: messages.slice(-8),
+      });
+      const teacherMessage: ChatMessage = {
+        id: Date.now() + 1,
+        role: "teacher",
+        message: reply,
+        timestamp: new Date().toISOString(),
+      };
+      const nextMessages = [...messages, teacherMessage];
+
+      setMessages(nextMessages);
+
+      if (todaysLesson) {
+        saveMessagesForLesson(todaysLesson.id, nextMessages);
+      }
+
+      setFailedMessage("");
+    } catch {
+      setChatError(
+        "Geminiとの接続に失敗しました。少し時間をおいて、もう一度送信してください。",
+      );
+    } finally {
+      setIsSending(false);
+    }
   }
 
   // テーマ一覧で選んだテーマを解除し、未完了テーマの先頭へ戻します。
@@ -535,19 +575,21 @@ export default function LearnPage() {
               padding: "12px",
             }}
           >
-            <input
+            <textarea
               value={inputText}
               disabled={isSending}
               onChange={(event) => setInputText(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === "Enter" && !isSending) {
+                if (event.key === "Enter" && event.ctrlKey && !isSending) {
                   sendMessage();
                 }
               }}
               placeholder="学びたいことを入力"
+              rows={4}
               style={{
                 width: "100%",
                 boxSizing: "border-box",
+                resize: "vertical",
                 border: "1px solid #c9d3e3",
                 borderRadius: "8px",
                 padding: "12px",
@@ -559,7 +601,7 @@ export default function LearnPage() {
 
             <button
               type="button"
-              onClick={sendMessage}
+              onClick={() => sendMessage()}
               disabled={isSending}
               style={{
                 border: "0",
@@ -590,17 +632,38 @@ export default function LearnPage() {
           ) : null}
 
           {chatError ? (
-            <p
-              style={{
-                margin: 0,
-                color: "#b42318",
-                fontSize: "14px",
-                fontWeight: 700,
-                lineHeight: "1.5",
-              }}
-            >
-              {chatError}
-            </p>
+            <div>
+              <p
+                style={{
+                  margin: "0 0 8px",
+                  color: "#b42318",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  lineHeight: "1.5",
+                }}
+              >
+                {chatError}
+              </p>
+
+              {failedMessage ? (
+                <button
+                  type="button"
+                  onClick={resendFailedMessage}
+                  disabled={isSending}
+                  style={{
+                    border: "1px solid #f0b4b4",
+                    borderRadius: "8px",
+                    background: "#fff5f5",
+                    color: "#b42318",
+                    padding: "10px 12px",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                  }}
+                >
+                  再送信
+                </button>
+              ) : null}
+            </div>
           ) : null}
 
           <button
