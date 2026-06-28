@@ -58,6 +58,11 @@ export const completedLessonIdsStorageKey =
 export const selectedLessonIdStorageKey =
   "ai-personal-university-selected-lesson-id";
 
+// 最後に学習完了したテーマIDをLocalStorageへ保存するときの名前です。
+// テーマ一覧で、直近学習している学部を上に出すために使います。
+export const lastStudiedLessonIdStorageKey =
+  "ai-personal-university-last-studied-lesson-id";
+
 // getTodaysLesson は、未完了テーマの中から最初の1件を選びます。
 // すべて完了している場合は null を返します。
 export function getTodaysLesson(completedLessonIds: string[]) {

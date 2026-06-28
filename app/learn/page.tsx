@@ -10,6 +10,7 @@ import { AppScreen } from "../../components/AppScreen";
 import {
   completedLessonIdsStorageKey,
   getTodaysLesson,
+  lastStudiedLessonIdStorageKey,
   lessons,
   selectedLessonIdStorageKey,
 } from "../../lib/lessons";
@@ -398,6 +399,7 @@ export default function LearnPage() {
       completedLessonIdsStorageKey,
       JSON.stringify(nextCompletedLessonIds),
     );
+    window.localStorage.setItem(lastStudiedLessonIdStorageKey, todaysLesson.id);
 
     return nextCompletedLessonIds;
   }

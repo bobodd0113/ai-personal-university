@@ -147,15 +147,60 @@ export default function HomePage() {
 
   return (
     <AppScreen>
-        <p
-          style={{
-            margin: "0 0 8px",
-            fontSize: "14px",
-            color: "#5d6b82",
-          }}
-        >
-          {userName ? `${userName}さん、おかえりなさい` : "ホーム画面"}
-        </p>
+        {userName ? (
+          <div
+            style={{
+              overflow: "hidden",
+              margin: "0 0 8px",
+              color: "#5d6b82",
+              fontSize: "14px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <p
+              className="welcome-marquee"
+              style={{
+                display: "inline-block",
+                margin: 0,
+                paddingLeft: "100%",
+              }}
+            >
+              {userName}さん、おかえりなさい
+            </p>
+          </div>
+        ) : (
+          <p
+            style={{
+              margin: "0 0 8px",
+              fontSize: "14px",
+              color: "#5d6b82",
+            }}
+          >
+            ホーム画面
+          </p>
+        )}
+
+        <style jsx>{`
+          .welcome-marquee {
+            animation: welcome-scroll 18s linear infinite;
+          }
+
+          @keyframes welcome-scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-100%);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .welcome-marquee {
+              animation: none;
+              padding-left: 0 !important;
+            }
+          }
+        `}</style>
 
         <h1
           style={{

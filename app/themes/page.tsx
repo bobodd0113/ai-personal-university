@@ -7,6 +7,7 @@ import {
   completedLessonIdsStorageKey,
   faculties,
   getTodaysLesson,
+  lastStudiedLessonIdStorageKey,
   lessons,
   selectedLessonIdStorageKey,
 } from "../../lib/lessons";
@@ -20,11 +21,27 @@ type LearningSummaryByLesson = Record<string, string>;
 export default function ThemesPage() {
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+  const [lastStudiedLessonId, setLastStudiedLessonId] = useState<string | null>(
+    null,
+  );
   const [learningSummaries, setLearningSummaries] =
     useState<LearningSummaryByLesson>({});
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId);
   const todaysLesson = selectedLesson ?? getTodaysLesson(completedLessonIds);
+  const priorityLessonId = selectedLessonId ?? lastStudiedLessonId;
+  const priorityFacultyId =
+    faculties.find((faculty) =>
+      faculty.lessons.some((lesson) => lesson.id === priorityLessonId),
+    )?.id ?? null;
   const sortedFaculties = [...faculties].sort((firstFaculty, secondFaculty) => {
+    if (firstFaculty.id === priorityFacultyId) {
+      return -1;
+    }
+
+    if (secondFaculty.id === priorityFacultyId) {
+      return 1;
+    }
+
     const firstCompleted = isFacultyCompleted(
       firstFaculty,
       completedLessonIds,
@@ -60,6 +77,18 @@ export default function ThemesPage() {
 
     setSelectedLessonId(
       savedSelectedLessonId && selectedLessonExists ? savedSelectedLessonId : null,
+    );
+    const savedLastStudiedLessonId = window.localStorage.getItem(
+      lastStudiedLessonIdStorageKey,
+    );
+    const lastStudiedLessonExists = lessons.some(
+      (lesson) => lesson.id === savedLastStudiedLessonId,
+    );
+
+    setLastStudiedLessonId(
+      savedLastStudiedLessonId && lastStudiedLessonExists
+        ? savedLastStudiedLessonId
+        : null,
     );
 
     const savedCompletedLessonIds = window.localStorage.getItem(
