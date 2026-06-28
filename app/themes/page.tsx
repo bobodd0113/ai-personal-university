@@ -24,6 +24,22 @@ export default function ThemesPage() {
     useState<LearningSummaryByLesson>({});
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId);
   const todaysLesson = selectedLesson ?? getTodaysLesson(completedLessonIds);
+  const sortedFaculties = [...faculties].sort((firstFaculty, secondFaculty) => {
+    const firstCompleted = isFacultyCompleted(
+      firstFaculty,
+      completedLessonIds,
+    );
+    const secondCompleted = isFacultyCompleted(
+      secondFaculty,
+      completedLessonIds,
+    );
+
+    if (firstCompleted === secondCompleted) {
+      return 0;
+    }
+
+    return firstCompleted ? 1 : -1;
+  });
   const completedLessonCount = lessons.filter((lesson) =>
     completedLessonIds.includes(lesson.id),
   ).length;
@@ -147,7 +163,7 @@ export default function ThemesPage() {
           gap: "16px",
         }}
       >
-        {faculties.map((faculty) => (
+        {sortedFaculties.map((faculty) => (
           <FacultySection
             key={faculty.id}
             faculty={faculty}
@@ -159,6 +175,15 @@ export default function ThemesPage() {
         ))}
       </div>
     </AppScreen>
+  );
+}
+
+function isFacultyCompleted(
+  faculty: (typeof faculties)[number],
+  completedLessonIds: string[],
+) {
+  return faculty.lessons.every((lesson) =>
+    completedLessonIds.includes(lesson.id),
   );
 }
 
