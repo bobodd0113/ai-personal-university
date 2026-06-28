@@ -167,9 +167,14 @@ export default function TeacherSettingsPage() {
             }
           />
           <TextInput
-            label="アイコン（絵文字）"
+            label="アイコン（絵文字・画像未設定時に使います）"
             value={teacher.icon}
             onChange={(value) => updateTeacherProfile("icon", value)}
+          />
+          <TextInput
+            label="アイコン画像パス（例: /teachers/main-teacher.png）"
+            value={teacher.iconImage}
+            onChange={(value) => updateTeacherProfile("iconImage", value)}
           />
 
           <button

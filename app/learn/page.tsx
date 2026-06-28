@@ -564,6 +564,7 @@ export default function LearnPage() {
                 message={message}
                 teacherName={teacher.name}
                 teacherIcon={teacher.icon}
+                teacherIconImage={teacher.iconImage}
               />
             ))}
           </div>
@@ -799,10 +800,12 @@ function ChatBubble({
   message,
   teacherName,
   teacherIcon,
+  teacherIconImage,
 }: {
   message: ChatMessage;
   teacherName: string;
   teacherIcon: string;
+  teacherIconImage: string;
 }) {
   const isUser = message.role === "user";
   const isSystem = message.role === "system";
@@ -827,7 +830,29 @@ function ChatBubble({
           fontWeight: 700,
         }}
       >
-        {isUser ? "あなた" : isSystem ? "システム" : `${teacherIcon} ${teacherName}`}
+        {isUser || isSystem ? (
+          isUser ? "あなた" : "システム"
+        ) : (
+          <>
+            {teacherIconImage ? (
+              <img
+                src={teacherIconImage}
+                alt=""
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  verticalAlign: "middle",
+                  marginRight: "4px",
+                }}
+              />
+            ) : (
+              `${teacherIcon} `
+            )}
+            {teacherName}
+          </>
+        )}
       </p>
       <p
         style={{

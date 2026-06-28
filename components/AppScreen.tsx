@@ -8,7 +8,12 @@ export function AppScreen({ children }: { children: ReactNode }) {
     <main
       style={{
         minHeight: "100vh",
-        background: "#f5f7fb",
+        backgroundColor: "#f5f7fb",
+        backgroundImage:
+          "linear-gradient(rgba(245, 247, 251, 0.86), rgba(245, 247, 251, 0.9)), url('/backgrounds/main-wallpaper.png')",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
         color: "#172033",
         padding: "24px 24px 112px",
         fontFamily:

@@ -27,18 +27,23 @@ export type TeacherProfile = {
   // AI先生を画面で表すためのアイコンです。
   // 今回は画像ではなく、扱いやすい絵文字を使います。
   icon: string;
+
+  // AI先生アイコン画像のパスです。
+  // 画像を使わない場合は空文字のままで大丈夫です。
+  iconImage: string;
 };
 
 // アプリ全体で使う、最初のAI先生設定です。
 // 今後、設定画面や学習画面はこの値を読み込んで使います。
 export const defaultTeacherProfile: TeacherProfile = {
-  name: "トウ",
-  firstPerson: "俺",
-  personality: "穏やかで朗らか",
+  name: "シエル",
+  firstPerson: "私",
+  personality: "穏やかでクール",
   tone: "丁寧語",
-  teachingStyle: "簡単な言葉でわかりやすくゆっくり、一気に話しすぎない",
+  teachingStyle: "簡単な言葉でわかりやすくゆっくり話す",
   encouragementStyle: "小さな進歩を見つけて、前向きに励ます",
   icon: "🎓",
+  iconImage: "/teachers/main-teacher.png",
 };
 
 // LocalStorage に保存するときの名前です。
