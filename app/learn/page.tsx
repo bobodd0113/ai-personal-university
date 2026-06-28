@@ -226,7 +226,7 @@ export default function LearnPage() {
       };
     } catch {
       setChatError(
-        "Geminiとの接続に失敗しました。少し時間をおいて、もう一度送信してください。",
+        "接続に失敗しました。少し時間をおいて、もう一度送信してください。",
       );
       setFailedMessage(trimmedText);
       teacherMessage = null;
@@ -316,7 +316,7 @@ export default function LearnPage() {
       setFailedMessage("");
     } catch {
       setChatError(
-        "Geminiとの接続に失敗しました。少し時間をおいて、もう一度送信してください。",
+        "接続に失敗しました。少し時間をおいて、もう一度送信してください。",
       );
     } finally {
       setIsSending(false);
@@ -561,6 +561,7 @@ export default function LearnPage() {
                 key={message.id}
                 message={message}
                 teacherName={teacher.name}
+                teacherIcon={teacher.icon}
               />
             ))}
           </div>
@@ -795,9 +796,11 @@ function TeacherInfo({ label, value }: { label: string; value: string }) {
 function ChatBubble({
   message,
   teacherName,
+  teacherIcon,
 }: {
   message: ChatMessage;
   teacherName: string;
+  teacherIcon: string;
 }) {
   const isUser = message.role === "user";
   const isSystem = message.role === "system";
@@ -822,7 +825,7 @@ function ChatBubble({
           fontWeight: 700,
         }}
       >
-        {isUser ? "あなた" : isSystem ? "システム" : teacherName}
+        {isUser ? "あなた" : isSystem ? "システム" : `${teacherIcon} ${teacherName}`}
       </p>
       <p
         style={{

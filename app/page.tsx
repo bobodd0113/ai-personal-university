@@ -15,6 +15,7 @@ import {
 } from "../lib/badges";
 
 const xpStorageKey = "ai-personal-university-xp";
+const userNameStorageKey = "chino-boken-user-name";
 const streakStorageKey = "ai-personal-university-streak";
 
 type StreakData = {
@@ -33,6 +34,7 @@ const defaultStreak: StreakData = {
 // HomePage は、アプリを開いたときに最初に表示されるホーム画面です。
 // 今回は、XPとレベルをLocalStorageに保存できるようにします。
 export default function HomePage() {
+  const [userName, setUserName] = useState("");
   const [xp, setXp] = useState(0);
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
   const [earnedBadgeIds, setEarnedBadgeIds] = useState<string[]>([]);
@@ -51,6 +53,12 @@ export default function HomePage() {
 
   // 画面を開いたときに、保存済みXPがあれば読み込みます。
   useEffect(() => {
+    const savedUserName = window.localStorage.getItem(userNameStorageKey);
+
+    if (savedUserName) {
+      setUserName(savedUserName);
+    }
+
     const savedXp = window.localStorage.getItem(xpStorageKey);
 
     if (!savedXp) {
@@ -146,7 +154,7 @@ export default function HomePage() {
             color: "#5d6b82",
           }}
         >
-          ホーム画面
+          {userName ? `${userName}さん、おかえりなさい` : "ホーム画面"}
         </p>
 
         <h1

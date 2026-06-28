@@ -14,6 +14,7 @@ import {
 import { earnedBadgeIdsStorageKey } from "../../lib/badges";
 
 const xpStorageKey = "ai-personal-university-xp";
+const userNameStorageKey = "chino-boken-user-name";
 const streakStorageKey = "ai-personal-university-streak";
 const oldChatStorageKey = "ai-personal-university-chat-history";
 const chatByLessonStorageKey = "ai-personal-university-chat-history-by-lesson";
@@ -24,11 +25,18 @@ const learningSummaryStorageKey =
 // 入力したプロフィールを LocalStorage に保存します。
 export default function TeacherSettingsPage() {
   const [teacher, setTeacher] = useState<TeacherProfile>(defaultTeacherProfile);
+  const [userName, setUserName] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
 
   // 画面を開いたときに、保存済みの先生設定があれば読み込みます。
   // 保存済みデータがない初回起動時は defaultTeacherProfile を使います。
   useEffect(() => {
+    const savedUserName = window.localStorage.getItem(userNameStorageKey);
+
+    if (savedUserName) {
+      setUserName(savedUserName);
+    }
+
     const savedTeacher = window.localStorage.getItem(teacherProfileStorageKey);
 
     if (!savedTeacher) {
@@ -56,6 +64,14 @@ export default function TeacherSettingsPage() {
 
   // 保存ボタンを押したときに、LocalStorage へ保存します。
   function saveTeacherProfile() {
+    const trimmedUserName = userName.trim();
+
+    if (trimmedUserName) {
+      window.localStorage.setItem(userNameStorageKey, trimmedUserName);
+    } else {
+      window.localStorage.removeItem(userNameStorageKey);
+    }
+
     window.localStorage.setItem(
       teacherProfileStorageKey,
       JSON.stringify(teacher),
@@ -113,6 +129,11 @@ export default function TeacherSettingsPage() {
             gap: "12px",
           }}
         >
+          <TextInput
+            label="ユーザー名"
+            value={userName}
+            onChange={setUserName}
+          />
           <TextInput
             label="名前"
             value={teacher.name}

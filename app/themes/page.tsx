@@ -181,6 +181,19 @@ function FacultySection({
   const totalCount = faculty.lessons.length;
   const progressPercent =
     totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const sortedLessons = [...faculty.lessons].sort((firstLesson, secondLesson) => {
+    const firstCompleted = completedLessonIds.includes(firstLesson.id);
+    const secondCompleted = completedLessonIds.includes(secondLesson.id);
+
+    if (firstCompleted === secondCompleted) {
+      return 0;
+    }
+
+    return firstCompleted ? 1 : -1;
+  });
+  const firstCompletedIndex = sortedLessons.findIndex((lesson) =>
+    completedLessonIds.includes(lesson.id),
+  );
 
   return (
     <section
@@ -232,7 +245,7 @@ function FacultySection({
           gap: "10px",
         }}
       >
-        {faculty.lessons.map((lesson) => {
+        {sortedLessons.map((lesson, lessonIndex) => {
           const isCompleted = completedLessonIds.includes(lesson.id);
           const isTodaysLesson = todaysLessonId === lesson.id;
           const isSelectedLesson = selectedLessonId === lesson.id;
@@ -244,19 +257,32 @@ function FacultySection({
               : "";
 
           return (
-            <div
-              key={lesson.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "12px",
-                border: "1px solid #edf1f7",
-                borderRadius: "8px",
-                background: isTodaysLesson ? "#eef3ff" : "#ffffff",
-                padding: "12px",
-              }}
-            >
+            <div key={lesson.id}>
+              {lessonIndex === firstCompletedIndex ? (
+                <p
+                  style={{
+                    margin: "4px 0 8px",
+                    color: "#5d6b82",
+                    fontSize: "13px",
+                    fontWeight: 700,
+                  }}
+                >
+                  完了済み
+                </p>
+              ) : null}
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  border: "1px solid #edf1f7",
+                  borderRadius: "8px",
+                  background: isTodaysLesson ? "#eef3ff" : "#ffffff",
+                  padding: "12px",
+                }}
+              >
               <div>
                 <p
                   style={{
@@ -354,6 +380,7 @@ function FacultySection({
                   </p>
                 </div>
               ) : null}
+              </div>
             </div>
           );
         })}
