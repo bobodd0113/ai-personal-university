@@ -6,6 +6,7 @@ import {
   teacherProfileStorageKey,
   type TeacherProfile,
 } from "../../lib/teacher";
+import { defaultTeacherIconImage } from "../../lib/assets";
 import { AppScreen } from "../../components/AppScreen";
 import {
   completedLessonIdsStorageKey,
@@ -88,10 +89,17 @@ export default function LearnPage() {
 
     try {
       const parsedTeacher = JSON.parse(savedTeacher) as TeacherProfile;
-      setTeacher({
+      const nextTeacher = {
         ...defaultTeacherProfile,
         ...parsedTeacher,
-      });
+        iconImage: normalizeTeacherIconImage(parsedTeacher.iconImage),
+      };
+
+      setTeacher(nextTeacher);
+      window.localStorage.setItem(
+        teacherProfileStorageKey,
+        JSON.stringify(nextTeacher),
+      );
     } catch {
       setTeacher(defaultTeacherProfile);
     }
@@ -513,9 +521,22 @@ export default function LearnPage() {
                 borderRadius: "8px",
                 background: "#eef3ff",
                 fontSize: "28px",
+                overflow: "hidden",
               }}
             >
-              {teacher.icon}
+              {teacher.iconImage ? (
+                <img
+                  src={teacher.iconImage}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                teacher.icon
+              )}
             </span>
 
             <div>
@@ -770,6 +791,14 @@ export default function LearnPage() {
         </section>
     </AppScreen>
   );
+}
+
+function normalizeTeacherIconImage(iconImage: string | undefined) {
+  if (iconImage !== defaultTeacherIconImage) {
+    return defaultTeacherIconImage;
+  }
+
+  return iconImage;
 }
 
 // TeacherInfo は、先生情報を1行で表示するための小さな部品です。

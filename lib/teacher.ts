@@ -1,3 +1,5 @@
+import { defaultTeacherIconImage } from "./assets";
+
 // AI先生の設定をまとめるファイルです。
 // 画面ごとに先生の名前や口調を書いてしまうと、
 // 後で変更したいときに探すのが大変になります。
@@ -43,7 +45,7 @@ export const defaultTeacherProfile: TeacherProfile = {
   teachingStyle: "簡単な言葉でわかりやすくゆっくり話す",
   encouragementStyle: "小さな進歩を見つけて、前向きに励ます",
   icon: "🎓",
-  iconImage: "/teachers/main-teacher.png",
+  iconImage: defaultTeacherIconImage,
 };
 
 // LocalStorage に保存するときの名前です。

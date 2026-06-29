@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
+import { defaultWallpaperImage } from "../lib/assets";
 
 // AppScreen は、スマホで読みやすい画面の共通コンテナです。
 // 背景色、余白、最大幅をここにまとめます。
@@ -10,7 +11,7 @@ export function AppScreen({ children }: { children: ReactNode }) {
         minHeight: "100vh",
         backgroundColor: "#f5f7fb",
         backgroundImage:
-          "linear-gradient(rgba(245, 247, 251, 0.86), rgba(245, 247, 251, 0.9)), url('/backgrounds/main-wallpaper.png')",
+          `linear-gradient(rgba(245, 247, 251, 0.72), rgba(245, 247, 251, 0.82)), url('${defaultWallpaperImage}')`,
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundAttachment: "fixed",

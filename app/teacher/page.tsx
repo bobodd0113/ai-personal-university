@@ -6,6 +6,7 @@ import {
   teacherProfileStorageKey,
   type TeacherProfile,
 } from "../../lib/teacher";
+import { defaultTeacherIconImage } from "../../lib/assets";
 import { AppScreen } from "../../components/AppScreen";
 import {
   completedLessonIdsStorageKey,
@@ -45,10 +46,17 @@ export default function TeacherSettingsPage() {
 
     try {
       const parsedTeacher = JSON.parse(savedTeacher) as TeacherProfile;
-      setTeacher({
+      const nextTeacher = {
         ...defaultTeacherProfile,
         ...parsedTeacher,
-      });
+        iconImage: normalizeTeacherIconImage(parsedTeacher.iconImage),
+      };
+
+      setTeacher(nextTeacher);
+      window.localStorage.setItem(
+        teacherProfileStorageKey,
+        JSON.stringify(nextTeacher),
+      );
     } catch {
       setTeacher(defaultTeacherProfile);
     }
@@ -101,6 +109,20 @@ export default function TeacherSettingsPage() {
     window.location.href = "/";
   }
 
+  function resetTeacherIconImage() {
+    const nextTeacher = {
+      ...teacher,
+      iconImage: defaultTeacherIconImage,
+    };
+
+    setTeacher(nextTeacher);
+    window.localStorage.setItem(
+      teacherProfileStorageKey,
+      JSON.stringify(nextTeacher),
+    );
+    setSavedMessage("先生画像を初期画像に戻しました");
+  }
+
   return (
     <AppScreen>
         <p
@@ -118,9 +140,26 @@ export default function TeacherSettingsPage() {
             margin: "0 0 16px",
             fontSize: "30px",
             lineHeight: "1.2",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
           }}
         >
-          {teacher.icon} {teacher.name}先生
+          {teacher.iconImage ? (
+            <img
+              src={teacher.iconImage}
+              alt=""
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            teacher.icon
+          )}
+          {teacher.name}先生
         </h1>
 
         <div
@@ -179,6 +218,22 @@ export default function TeacherSettingsPage() {
 
           <button
             type="button"
+            onClick={resetTeacherIconImage}
+            style={{
+              border: "1px solid #d9e0ec",
+              borderRadius: "8px",
+              background: "#ffffff",
+              color: "#2446d8",
+              padding: "14px",
+              fontSize: "15px",
+              fontWeight: 700,
+            }}
+          >
+            先生画像を初期画像に戻す
+          </button>
+
+          <button
+            type="button"
             onClick={saveTeacherProfile}
             style={{
               border: "0",
@@ -233,6 +288,14 @@ export default function TeacherSettingsPage() {
         </div>
     </AppScreen>
   );
+}
+
+function normalizeTeacherIconImage(iconImage: string | undefined) {
+  if (iconImage !== defaultTeacherIconImage) {
+    return defaultTeacherIconImage;
+  }
+
+  return iconImage;
 }
 
 // TextInput は、先生プロフィールを入力するための部品です。
